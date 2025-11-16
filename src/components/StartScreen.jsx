@@ -1,12 +1,29 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { WCAG_VERSIONS, getQuestionStats } from "../data/questionManager";
 
 function StartScreen({ onStartGame, onViewLeaderboard }) {
   const headingRef = useRef(null);
+  const [wcagVersion, setWcagVersion] = useState("combined");
 
   useEffect(() => {
     // Focus on heading when screen loads
     headingRef.current?.focus();
   }, []);
+
+  const handleStartGame = (difficulty) => {
+    onStartGame(difficulty, wcagVersion);
+  };
+
+  // Get question statistics for display
+  const stats = getQuestionStats();
+  const currentStats =
+    stats[
+      wcagVersion === "2.1"
+        ? "wcag21"
+        : wcagVersion === "2.2"
+        ? "wcag22"
+        : "combined"
+    ];
 
   return (
     <section className="container my-5" aria-labelledby="start-heading">
@@ -27,6 +44,41 @@ function StartScreen({ onStartGame, onViewLeaderboard }) {
           </p>
 
           <div className="mb-4">
+            <h3 className="text-center mb-3">WCAG Version</h3>
+            <div className="row justify-content-center mb-4">
+              <div className="col-md-8">
+                <div
+                  className="btn-group w-100"
+                  role="group"
+                  aria-label="WCAG version selection"
+                >
+                  {Object.entries(WCAG_VERSIONS).map(([key, label]) => (
+                    <button
+                      key={key}
+                      type="button"
+                      className={`btn ${
+                        wcagVersion === key
+                          ? "btn-primary"
+                          : "btn-outline-primary"
+                      }`}
+                      onClick={() => setWcagVersion(key)}
+                      aria-pressed={wcagVersion === key}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <div className="text-center mt-2 text-muted small">
+                  {currentStats.total} questions available (Beginner:{" "}
+                  {currentStats.beginner}, Intermediate:{" "}
+                  {currentStats.intermediate}, Advanced: {currentStats.advanced}
+                  )
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-4">
             <h3 className="text-center mb-4">Choose Your Difficulty</h3>
             <div
               className="row g-3"
@@ -40,7 +92,7 @@ function StartScreen({ onStartGame, onViewLeaderboard }) {
                     <p className="card-text">Common accessibility issues</p>
                     <button
                       className="btn btn-success w-100"
-                      onClick={() => onStartGame("beginner")}
+                      onClick={() => handleStartGame("beginner")}
                     >
                       Start
                     </button>
@@ -56,7 +108,7 @@ function StartScreen({ onStartGame, onViewLeaderboard }) {
                     <p className="card-text">ARIA and semantic HTML</p>
                     <button
                       className="btn btn-warning text-dark w-100"
-                      onClick={() => onStartGame("intermediate")}
+                      onClick={() => handleStartGame("intermediate")}
                     >
                       Start
                     </button>
@@ -70,7 +122,7 @@ function StartScreen({ onStartGame, onViewLeaderboard }) {
                     <p className="card-text">Complex patterns & WCAG</p>
                     <button
                       className="btn btn-danger w-100"
-                      onClick={() => onStartGame("advanced")}
+                      onClick={() => handleStartGame("advanced")}
                     >
                       Start
                     </button>

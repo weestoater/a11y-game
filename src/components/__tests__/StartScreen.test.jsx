@@ -23,7 +23,7 @@ describe("StartScreen Component", () => {
 
     const startButtons = screen.getAllByRole("button", { name: /Start/i });
     fireEvent.click(startButtons[0]); // First Start button is Beginner
-    expect(mockStart).toHaveBeenCalledWith("beginner");
+    expect(mockStart).toHaveBeenCalledWith("beginner", "combined");
   });
 
   it('calls onStartGame with "intermediate" when Intermediate Start is clicked', () => {
@@ -32,7 +32,7 @@ describe("StartScreen Component", () => {
 
     const startButtons = screen.getAllByRole("button", { name: /Start/i });
     fireEvent.click(startButtons[1]); // Second Start button is Intermediate
-    expect(mockStart).toHaveBeenCalledWith("intermediate");
+    expect(mockStart).toHaveBeenCalledWith("intermediate", "combined");
   });
 
   it('calls onStartGame with "advanced" when Advanced Start is clicked', () => {
@@ -41,7 +41,7 @@ describe("StartScreen Component", () => {
 
     const startButtons = screen.getAllByRole("button", { name: /Start/i });
     fireEvent.click(startButtons[2]); // Third Start button is Advanced
-    expect(mockStart).toHaveBeenCalledWith("advanced");
+    expect(mockStart).toHaveBeenCalledWith("advanced", "combined");
   });
 
   it("displays difficulty descriptions", () => {
@@ -64,5 +64,55 @@ describe("StartScreen Component", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /View Leaderboards/i }));
     expect(mockViewLeaderboard).toHaveBeenCalledTimes(1);
+  });
+
+  it("renders WCAG version selection buttons", () => {
+    render(<StartScreen onStartGame={vi.fn()} onViewLeaderboard={vi.fn()} />);
+    expect(
+      screen.getByRole("button", { name: "WCAG 2.1" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "WCAG 2.2" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "WCAG 2.1 & 2.2" })
+    ).toBeInTheDocument();
+  });
+
+  it("defaults to combined WCAG version", () => {
+    render(<StartScreen onStartGame={vi.fn()} onViewLeaderboard={vi.fn()} />);
+    const combinedButton = screen.getByRole("button", {
+      name: "WCAG 2.1 & 2.2",
+    });
+    expect(combinedButton).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("changes WCAG version when button is clicked", () => {
+    const mockStart = vi.fn();
+    render(<StartScreen onStartGame={mockStart} onViewLeaderboard={vi.fn()} />);
+
+    // Click WCAG 2.1 button
+    const wcag21Button = screen.getByRole("button", { name: "WCAG 2.1" });
+    fireEvent.click(wcag21Button);
+
+    // Now start a game and verify it uses WCAG 2.1
+    const startButtons = screen.getAllByRole("button", { name: /Start/i });
+    fireEvent.click(startButtons[0]);
+    expect(mockStart).toHaveBeenCalledWith("beginner", "2.1");
+  });
+
+  it("displays question count for selected WCAG version", () => {
+    render(<StartScreen onStartGame={vi.fn()} onViewLeaderboard={vi.fn()} />);
+    expect(screen.getByText(/questions available/i)).toBeInTheDocument();
+  });
+
+  it("updates question count when WCAG version changes", () => {
+    render(<StartScreen onStartGame={vi.fn()} onViewLeaderboard={vi.fn()} />);
+
+    const wcag21Button = screen.getByRole("button", { name: "WCAG 2.1" });
+    fireEvent.click(wcag21Button);
+
+    // Should still show question count text
+    expect(screen.getByText(/questions available/i)).toBeInTheDocument();
   });
 });

@@ -13,6 +13,7 @@ function App() {
   const [screen, setScreen] = useState("sid");
   const [studentID, setStudentID] = useState(null);
   const [difficulty, setDifficulty] = useState(null);
+  const [wcagVersion, setWcagVersion] = useState("combined");
   const [score, setScore] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [completionTime, setCompletionTime] = useState(0);
@@ -22,8 +23,12 @@ function App() {
     setScreen("start");
   };
 
-  const handleStartGame = (selectedDifficulty) => {
+  const handleStartGame = (
+    selectedDifficulty,
+    selectedWcagVersion = "combined"
+  ) => {
     setDifficulty(selectedDifficulty);
+    setWcagVersion(selectedWcagVersion);
     setScore(0);
     setAnswers([]);
     setCompletionTime(0);
@@ -43,6 +48,7 @@ function App() {
     saveScore({
       sid: studentID,
       difficulty: difficulty,
+      wcagVersion: wcagVersion,
       score: finalScore,
       totalQuestions: totalQuestions,
       correctAnswers: correctAnswers,
@@ -118,6 +124,7 @@ function App() {
           {screen === "game" && (
             <GameScreen
               difficulty={difficulty}
+              wcagVersion={wcagVersion}
               onGameComplete={handleGameComplete}
             />
           )}

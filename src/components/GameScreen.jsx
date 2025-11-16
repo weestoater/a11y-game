@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from "react";
-import { questionDatabase } from "../data/questions";
+import { useState, useEffect, useRef, useMemo, memo } from "react";
+import { getQuestions, shuffleArray } from "../data/questionManager";
 
-function GameScreen({ difficulty, onGameComplete }) {
+function GameScreen({ difficulty, onGameComplete, wcagVersion = "combined" }) {
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -18,23 +18,18 @@ function GameScreen({ difficulty, onGameComplete }) {
   const feedbackPanelRef = useRef(null);
   const timerIntervalRef = useRef(null);
 
-  // Shuffle array utility
-  const shuffleArray = (array) => {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-  };
+  // Memoized shuffled questions - only recalculate when difficulty or version changes
+  const shuffledQuestions = useMemo(() => {
+    const allQuestions = getQuestions(difficulty, wcagVersion);
+    return shuffleArray(allQuestions);
+  }, [difficulty, wcagVersion]);
 
   // Initialize questions
   useEffect(() => {
-    const allQuestions = [...questionDatabase[difficulty]];
-    setQuestions(shuffleArray(allQuestions));
+    setQuestions(shuffledQuestions);
     // Start timer when game begins
     setStartTime(Date.now());
-  }, [difficulty]);
+  }, [shuffledQuestions]);
 
   // Timer effect
   useEffect(() => {
@@ -78,6 +73,20 @@ function GameScreen({ difficulty, onGameComplete }) {
       questionTitleRef.current?.focus();
     }, 100);
   };
+
+  // Memoized progress and time formatting
+  const progress = useMemo(
+    () => (currentQuestionIndex / questions.length) * 100,
+    [currentQuestionIndex, questions.length]
+  );
+
+  const formatTime = useMemo(() => {
+    return (seconds) => {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins}:${secs.toString().padStart(2, "0")}`;
+    };
+  }, []);
 
   const handleAnswerSelect = (displayIndex) => {
     setSelectedAnswer(displayIndex);
@@ -138,12 +147,6 @@ function GameScreen({ difficulty, onGameComplete }) {
   }
 
   const question = questions[currentQuestionIndex];
-  const progress = (currentQuestionIndex / questions.length) * 100;
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
 
   return (
     <section className="container my-4" aria-labelledby="game-heading">
@@ -290,4 +293,5 @@ function GameScreen({ difficulty, onGameComplete }) {
   );
 }
 
-export default GameScreen;
+// Memoize component to prevent unnecessary re-renders
+export default memo(GameScreen);
