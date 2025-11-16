@@ -63,6 +63,7 @@ function SIDScreen({ onSubmitSID }) {
                     ref={inputRef}
                     type="text"
                     id="sid-input"
+                    name="sid"
                     className={`form-control form-control-lg ${
                       error ? "is-invalid" : ""
                     }`}
