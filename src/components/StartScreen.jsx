@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-function StartScreen({ onStartGame }) {
+function StartScreen({ onStartGame, onViewLeaderboard }) {
   const headingRef = useRef(null);
 
   useEffect(() => {
@@ -48,6 +48,12 @@ function StartScreen({ onStartGame }) {
             <span className="btn-description">Complex patterns & WCAG</span>
           </button>
         </div>
+      </div>
+
+      <div className="secondary-actions">
+        <button className="btn btn-secondary" onClick={onViewLeaderboard}>
+          View Leaderboards
+        </button>
       </div>
     </section>
   );

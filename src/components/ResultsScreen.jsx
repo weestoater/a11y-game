@@ -1,11 +1,15 @@
 import { useEffect, useRef } from "react";
+import { formatTime } from "../utils/leaderboard";
 
 function ResultsScreen({
   score,
   answers,
   difficulty,
+  completionTime,
+  studentID,
   onPlayAgain,
   onChangeDifficulty,
+  onViewLeaderboard,
 }) {
   const headingRef = useRef(null);
 
@@ -61,6 +65,7 @@ function ResultsScreen({
           <p className="score-text">Your Score</p>
           <p className="score-number">{score}</p>
           <p className="score-percentage">{percentage}%</p>
+          <p className="completion-time">Time: {formatTime(completionTime)}</p>
         </div>
 
         <div className="performance-badge">
@@ -69,6 +74,10 @@ function ResultsScreen({
         </div>
 
         <div className="stats-grid">
+          <div className="stat-item">
+            <span className="stat-label">Standard ID</span>
+            <span className="stat-value stat-sid">{studentID}</span>
+          </div>
           <div className="stat-item">
             <span className="stat-label">Correct</span>
             <span className="stat-value">{correctAnswers}</span>
@@ -98,6 +107,12 @@ function ResultsScreen({
           onClick={onChangeDifficulty}
         >
           Change Difficulty
+        </button>
+        <button
+          className="btn btn-secondary btn-large"
+          onClick={onViewLeaderboard}
+        >
+          View Leaderboard
         </button>
       </div>
 

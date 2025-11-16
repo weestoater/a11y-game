@@ -8,6 +8,8 @@ An interactive, accessible game designed to help developers test and improve the
 
 ## ✨ Features
 
+- **Standard ID Tracking**: Enter your SID (one letter + 6 digits) to track scores and compete on leaderboards
+
 - **Three Difficulty Levels**
 
   - **Beginner**: Common accessibility issues (alt text, labels, headings)
@@ -15,6 +17,20 @@ An interactive, accessible game designed to help developers test and improve the
   - **Advanced**: Complex patterns, WCAG compliance, and edge cases
 
 - **30 Real-World Challenges**: Each question presents authentic code snippets with explanations and WCAG references
+
+- **Performance Tracking**:
+
+  - Score tracking per session
+  - Completion time tracking
+  - Accuracy percentages
+  - Personal best scores
+
+- **Leaderboards**:
+
+  - Separate leaderboards for each difficulty level
+  - Sorted by highest score, then fastest time
+  - View your ranking against other students
+  - Persistent storage using localStorage
 
 - **Fully Accessible**:
 
@@ -62,11 +78,13 @@ The optimized files will be in the `dist` folder.
 
 ## 🎮 How to Play
 
-1. **Choose Your Difficulty**: Select Beginner, Intermediate, or Advanced
-2. **Review the Code**: Examine the code snippet for accessibility issues
-3. **Answer the Question**: Select the best answer from the multiple choices
-4. **Learn from Feedback**: Read detailed explanations and WCAG references
-5. **Track Your Progress**: See your score and earn performance badges
+1. **Enter Your Standard ID**: Submit your 7-character Standard ID (e.g., A123456)
+2. **Choose Your Difficulty**: Select Beginner, Intermediate, or Advanced
+3. **Review the Code**: Examine the code snippet for accessibility issues
+4. **Answer the Question**: Select the best answer from the multiple choices
+5. **Learn from Feedback**: Read detailed explanations and WCAG references
+6. **Track Your Progress**: See your score, time, and check the leaderboards
+7. **Compete**: Try to achieve the highest score in the fastest time!
 
 ## 📚 What You'll Learn
 
@@ -86,16 +104,20 @@ a11y-game/
 │   │   ├── Header.jsx
 │   │   ├── Footer.jsx
 │   │   ├── SkipLink.jsx
+│   │   ├── SIDScreen.jsx          # Standard ID entry
 │   │   ├── StartScreen.jsx
-│   │   ├── GameScreen.jsx
-│   │   └── ResultsScreen.jsx
+│   │   ├── GameScreen.jsx         # Includes timer
+│   │   ├── ResultsScreen.jsx
+│   │   └── LeaderboardScreen.jsx  # Leaderboard display
 │   ├── data/
-│   │   └── questions.js      # Question database (30 questions)
-│   ├── App.jsx               # Main app component
-│   ├── main.jsx             # React entry point
-│   └── index.css            # Global styles
-├── index-react.html          # HTML entry point for React
-├── vite.config.js           # Vite configuration
+│   │   └── questions.js           # Question database (30 questions)
+│   ├── utils/
+│   │   └── leaderboard.js         # Leaderboard management utilities
+│   ├── App.jsx                    # Main app component
+│   ├── main.jsx                   # React entry point
+│   └── index.css                  # Global styles
+├── index.html                     # HTML entry point for React
+├── vite.config.js                # Vite configuration
 ├── package.json
 └── README.md
 ```

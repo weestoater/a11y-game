@@ -11,9 +11,12 @@ function GameScreen({ difficulty, onGameComplete }) {
   const [isCorrect, setIsCorrect] = useState(false);
   const [shuffledOptions, setShuffledOptions] = useState([]);
   const [answerMapping, setAnswerMapping] = useState([]);
+  const [startTime, setStartTime] = useState(null);
+  const [elapsedTime, setElapsedTime] = useState(0);
 
   const questionTitleRef = useRef(null);
   const feedbackPanelRef = useRef(null);
+  const timerIntervalRef = useRef(null);
 
   // Shuffle array utility
   const shuffleArray = (array) => {
@@ -29,7 +32,24 @@ function GameScreen({ difficulty, onGameComplete }) {
   useEffect(() => {
     const allQuestions = [...questionDatabase[difficulty]];
     setQuestions(shuffleArray(allQuestions));
+    // Start timer when game begins
+    setStartTime(Date.now());
   }, [difficulty]);
+
+  // Timer effect
+  useEffect(() => {
+    if (startTime) {
+      timerIntervalRef.current = setInterval(() => {
+        setElapsedTime(Math.floor((Date.now() - startTime) / 1000));
+      }, 1000);
+
+      return () => {
+        if (timerIntervalRef.current) {
+          clearInterval(timerIntervalRef.current);
+        }
+      };
+    }
+  }, [startTime]);
 
   // Load current question
   useEffect(() => {
@@ -100,7 +120,12 @@ function GameScreen({ difficulty, onGameComplete }) {
     if (nextIndex < questions.length) {
       setCurrentQuestionIndex(nextIndex);
     } else {
-      onGameComplete(score + (isCorrect ? 10 : 0), answers);
+      // Stop timer
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+      }
+      // Pass elapsed time to parent
+      onGameComplete(score + (isCorrect ? 10 : 0), answers, elapsedTime);
     }
   };
 
@@ -110,6 +135,11 @@ function GameScreen({ difficulty, onGameComplete }) {
 
   const question = questions[currentQuestionIndex];
   const progress = (currentQuestionIndex / questions.length) * 100;
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
 
   return (
     <section className="screen active" aria-labelledby="game-heading">
@@ -133,9 +163,15 @@ function GameScreen({ difficulty, onGameComplete }) {
             ></div>
           </div>
         </div>
-        <div className="score-display">
-          <span className="score-label">Score:</span>
-          <span className="score-value">{score}</span>
+        <div className="score-timer-container">
+          <div className="score-display">
+            <span className="score-label">Score:</span>
+            <span className="score-value">{score}</span>
+          </div>
+          <div className="timer-display">
+            <span className="timer-label">Time:</span>
+            <span className="timer-value">{formatTime(elapsedTime)}</span>
+          </div>
         </div>
       </div>
 
