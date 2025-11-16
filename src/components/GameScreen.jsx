@@ -105,7 +105,7 @@ function GameScreen({ difficulty, onGameComplete }) {
     setAnswers(newAnswers);
 
     if (correct) {
-      setScore(score + 10);
+      setScore((prevScore) => prevScore + 10);
     }
 
     // Focus on feedback
@@ -124,8 +124,12 @@ function GameScreen({ difficulty, onGameComplete }) {
       if (timerIntervalRef.current) {
         clearInterval(timerIntervalRef.current);
       }
-      // Pass elapsed time to parent
-      onGameComplete(score + (isCorrect ? 10 : 0), answers, elapsedTime);
+
+      // Calculate final score from answers array to ensure accuracy
+      const finalScore = answers.filter((a) => a.isCorrect).length * 10;
+
+      // Pass final score and elapsed time to parent
+      onGameComplete(finalScore, answers, elapsedTime);
     }
   };
 
@@ -142,133 +146,144 @@ function GameScreen({ difficulty, onGameComplete }) {
   };
 
   return (
-    <section className="screen active" aria-labelledby="game-heading">
-      <div className="game-header">
-        <div className="progress-info">
-          <h2 id="game-heading">
-            Question <span>{currentQuestionIndex + 1}</span> of{" "}
-            <span>{questions.length}</span>
-          </h2>
-          <div
-            className="progress-bar"
-            role="progressbar"
-            aria-valuenow={progress}
-            aria-valuemin="0"
-            aria-valuemax="100"
-            aria-label="Quiz progress"
-          >
-            <div
-              className="progress-fill"
-              style={{ width: `${progress}%` }}
-            ></div>
-          </div>
-        </div>
-        <div className="score-timer-container">
-          <div className="score-display">
-            <span className="score-label">Score:</span>
-            <span className="score-value">{score}</span>
-          </div>
-          <div className="timer-display">
-            <span className="timer-label">Time:</span>
-            <span className="timer-value">{formatTime(elapsedTime)}</span>
+    <section className="container my-4" aria-labelledby="game-heading">
+      <div className="card shadow-sm mb-4">
+        <div className="card-body">
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <div className="flex-grow-1 me-3">
+              <h2 id="game-heading" className="h5 mb-2">
+                Question <span>{currentQuestionIndex + 1}</span> of{" "}
+                <span>{questions.length}</span>
+              </h2>
+              <div className="progress" style={{ height: "20px" }}>
+                <div
+                  className="progress-bar"
+                  role="progressbar"
+                  aria-valuenow={progress}
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  aria-label="Quiz progress"
+                  style={{ width: `${progress}%` }}
+                >
+                  {Math.round(progress)}%
+                </div>
+              </div>
+            </div>
+            <div className="d-flex gap-3">
+              <div className="badge bg-primary fs-6 p-2">Score: {score}</div>
+              <div className="badge bg-info fs-6 p-2">
+                Time: {formatTime(elapsedTime)}
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="challenge-content">
-        <h3
-          id="question-title"
-          className="question-title"
-          ref={questionTitleRef}
-          tabIndex="-1"
-        >
-          {question.title}
-        </h3>
-
-        <div
-          className="code-snippet"
-          role="region"
-          aria-labelledby="code-label"
-        >
-          <h4 id="code-label">Code to Review:</h4>
-          <pre>
-            <code>{question.code}</code>
-          </pre>
-        </div>
-
-        <div className="question-prompt">
-          <p id="question-text">{question.question}</p>
-        </div>
-
-        <div
-          className="answer-options"
-          role="radiogroup"
-          aria-labelledby="question-text"
-        >
-          {shuffledOptions.map((option, displayIndex) => (
-            <div key={displayIndex} className="answer-option">
-              <input
-                type="radio"
-                name="answer"
-                id={`option-${displayIndex}`}
-                value={displayIndex}
-                checked={selectedAnswer === displayIndex}
-                onChange={() => handleAnswerSelect(displayIndex)}
-                disabled={showFeedback}
-              />
-              <label htmlFor={`option-${displayIndex}`}>{option.text}</label>
-            </div>
-          ))}
-        </div>
-
-        <div className="button-group">
-          <button
-            id="submit-answer"
-            className="btn btn-primary"
-            onClick={handleSubmit}
-            disabled={selectedAnswer === null || showFeedback}
+      <div className="card shadow">
+        <div className="card-body p-4">
+          <h3
+            id="question-title"
+            className="card-title h4 mb-4"
+            ref={questionTitleRef}
+            tabIndex="-1"
           >
-            Submit Answer
-          </button>
+            {question.title}
+          </h3>
+
+          <div className="mb-4" role="region" aria-labelledby="code-label">
+            <h4 id="code-label" className="h6 mb-2">
+              Code to Review:
+            </h4>
+            <pre className="bg-light p-3 border rounded">
+              <code>{question.code}</code>
+            </pre>
+          </div>
+
+          <div className="mb-4">
+            <p id="question-text" className="lead">
+              {question.question}
+            </p>
+          </div>
+
+          <div
+            className="mb-4"
+            role="radiogroup"
+            aria-labelledby="question-text"
+          >
+            {shuffledOptions.map((option, displayIndex) => (
+              <div key={displayIndex} className="form-check mb-2">
+                <input
+                  type="radio"
+                  name="answer"
+                  className="form-check-input"
+                  id={`option-${displayIndex}`}
+                  value={displayIndex}
+                  checked={selectedAnswer === displayIndex}
+                  onChange={() => handleAnswerSelect(displayIndex)}
+                  disabled={showFeedback}
+                />
+                <label
+                  className="form-check-label"
+                  htmlFor={`option-${displayIndex}`}
+                >
+                  {option.text}
+                </label>
+              </div>
+            ))}
+          </div>
+
+          <div className="d-grid">
+            <button
+              id="submit-answer"
+              className="btn btn-primary btn-lg"
+              onClick={handleSubmit}
+              disabled={selectedAnswer === null || showFeedback}
+            >
+              Submit Answer
+            </button>
+          </div>
         </div>
       </div>
 
       {showFeedback && (
         <div
-          className={`feedback-panel ${isCorrect ? "correct" : "incorrect"}`}
+          className={`alert ${
+            isCorrect ? "alert-success" : "alert-danger"
+          } mt-4`}
           role="alert"
           aria-live="polite"
           aria-atomic="true"
           ref={feedbackPanelRef}
           tabIndex="-1"
         >
-          <div className="feedback-content">
-            <h4>{isCorrect ? "✓ Correct!" : "✗ Incorrect"}</h4>
-            <p>
-              {isCorrect
-                ? "Great job! You identified the accessibility issue."
-                : `The correct answer was: ${
-                    question.options[question.correctAnswer]
-                  }`}
+          <h4 className="alert-heading">
+            {isCorrect ? "✓ Correct!" : "✗ Incorrect"}
+          </h4>
+          <p>
+            {isCorrect
+              ? "Great job! You identified the accessibility issue."
+              : `The correct answer was: ${
+                  question.options[question.correctAnswer]
+                }`}
+          </p>
+          <hr />
+          <div>
+            <p className="mb-2">
+              <strong>Explanation:</strong> {question.explanation}
             </p>
-            <div className="explanation">
-              <p>
-                <strong>Explanation:</strong> {question.explanation}
-              </p>
-              <p>
-                <strong>WCAG Reference:</strong> {question.wcagReference}
-              </p>
-            </div>
-            <button
-              id="next-question"
-              className="btn btn-primary"
-              onClick={handleNext}
-            >
-              {currentQuestionIndex + 1 < questions.length
-                ? "Next Question"
-                : "See Results"}
-            </button>
+            <p className="mb-3">
+              <strong>WCAG Reference:</strong> {question.wcagReference}
+            </p>
           </div>
+          <button
+            id="next-question"
+            className="btn btn-primary"
+            onClick={handleNext}
+          >
+            {currentQuestionIndex + 1 < questions.length
+              ? "Next Question"
+              : "See Results"}
+          </button>
         </div>
       )}
     </section>
