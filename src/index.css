@@ -17,8 +17,22 @@
   box-sizing: border-box;
 }
 
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
 body {
   background-color: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 /* Skip Link for keyboard navigation */
@@ -91,3 +105,21 @@ pre code {
 }
 
 /* End of custom styles - Bootstrap handles the rest */
+
+/* ==========================================================================
+   Sticky Footer Layout
+   ========================================================================== */
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+footer {
+  flex-shrink: 0;
+}
