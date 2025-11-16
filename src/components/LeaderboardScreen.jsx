@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import * as XLSX from "xlsx";
+import { Nav, Tab, Table, Button, Container, Row, Col } from "react-bootstrap";
 import {
   getLeaderboardByDifficulty,
   formatTime,
@@ -97,151 +98,132 @@ function LeaderboardScreen({ onBack, currentSID }) {
   };
 
   return (
-    <section className="screen active" aria-labelledby="leaderboard-heading">
-      <h2 id="leaderboard-heading" ref={headingRef} tabIndex="-1">
-        Leaderboards
-      </h2>
-
-      <div className="leaderboard-controls">
-        <div
-          className="difficulty-tabs"
-          role="tablist"
-          aria-label="Difficulty level tabs"
-        >
-          <button
-            role="tab"
-            aria-selected={selectedDifficulty === "beginner"}
-            aria-controls="leaderboard-panel"
-            className={`tab-button ${
-              selectedDifficulty === "beginner" ? "active" : ""
-            }`}
-            onClick={() => loadLeaderboard("beginner")}
+    <Container className="my-5">
+      <Row className="justify-content-center">
+        <Col lg={10}>
+          <h2
+            id="leaderboard-heading"
+            ref={headingRef}
+            tabIndex="-1"
+            className="text-center mb-4"
           >
-            Beginner
-          </button>
-          <button
-            role="tab"
-            aria-selected={selectedDifficulty === "intermediate"}
-            aria-controls="leaderboard-panel"
-            className={`tab-button ${
-              selectedDifficulty === "intermediate" ? "active" : ""
-            }`}
-            onClick={() => loadLeaderboard("intermediate")}
-          >
-            Intermediate
-          </button>
-          <button
-            role="tab"
-            aria-selected={selectedDifficulty === "advanced"}
-            aria-controls="leaderboard-panel"
-            className={`tab-button ${
-              selectedDifficulty === "advanced" ? "active" : ""
-            }`}
-            onClick={() => loadLeaderboard("advanced")}
-          >
-            Advanced
-          </button>
-        </div>
-      </div>
+            Leaderboards
+          </h2>
 
-      <div
-        id="leaderboard-panel"
-        role="tabpanel"
-        aria-labelledby="leaderboard-heading"
-        className="leaderboard-panel"
-      >
-        <h3>{capitalizeFirst(selectedDifficulty)} Level</h3>
+          <Tab.Container
+            activeKey={selectedDifficulty}
+            onSelect={(k) => loadLeaderboard(k)}
+          >
+            <Nav variant="tabs" className="mb-4" role="tablist">
+              <Nav.Item>
+                <Nav.Link eventKey="beginner">Beginner</Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link eventKey="intermediate">Intermediate</Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link eventKey="advanced">Advanced</Nav.Link>
+              </Nav.Item>
+            </Nav>
 
-        {leaderboardData.length === 0 ? (
-          <div className="empty-leaderboard">
-            <p>No scores yet for this difficulty level.</p>
-            <p>Be the first to complete a game and set a record!</p>
+            <Tab.Content>
+              <Tab.Pane eventKey={selectedDifficulty}>
+                <h3 className="h5 mb-3">
+                  {capitalizeFirst(selectedDifficulty)} Level
+                </h3>
+
+                {leaderboardData.length === 0 ? (
+                  <div className="alert alert-info text-center">
+                    <p className="mb-2">
+                      No scores yet for this difficulty level.
+                    </p>
+                    <p className="mb-0">
+                      Be the first to complete a game and set a record!
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="table-responsive">
+                      <Table striped bordered hover className="mb-4">
+                        <caption className="visually-hidden">
+                          Leaderboard for {selectedDifficulty} difficulty,
+                          sorted by score and time
+                        </caption>
+                        <thead className="table-dark">
+                          <tr>
+                            <th scope="col">Rank</th>
+                            <th scope="col">Standard ID</th>
+                            <th scope="col">Score</th>
+                            <th scope="col">Accuracy</th>
+                            <th scope="col">Time</th>
+                            <th scope="col">Date</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {leaderboardData.map((entry, index) => (
+                            <tr
+                              key={index}
+                              className={
+                                entry.sid === currentSID ? "table-primary" : ""
+                              }
+                            >
+                              <td>
+                                <span aria-label={`Rank ${index + 1}`}>
+                                  {getRankBadge(index)}
+                                </span>
+                              </td>
+                              <td>
+                                {entry.sid}
+                                {entry.sid === currentSID && (
+                                  <span
+                                    className="badge bg-success ms-2"
+                                    aria-label="This is you"
+                                  >
+                                    You
+                                  </span>
+                                )}
+                              </td>
+                              <td className="fw-bold">{entry.score}</td>
+                              <td>{entry.percentage}%</td>
+                              <td>{formatTime(entry.timeInSeconds)}</td>
+                              <td>
+                                {new Date(entry.timestamp).toLocaleDateString()}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </Table>
+                    </div>
+
+                    <div className="alert alert-light">
+                      <p className="mb-1">
+                        <strong>Ranking:</strong> Sorted by highest score first,
+                        then fastest time.
+                      </p>
+                      <p className="mb-0 text-muted">
+                        Total entries: {leaderboardData.length}
+                      </p>
+                    </div>
+                  </>
+                )}
+              </Tab.Pane>
+            </Tab.Content>
+          </Tab.Container>
+
+          <div className="d-flex flex-wrap gap-2 justify-content-center mt-4">
+            <Button variant="primary" size="lg" onClick={onBack}>
+              Back to Game
+            </Button>
+            <Button variant="info" size="lg" onClick={handleExportToExcel}>
+              📊 Export to Excel
+            </Button>
+            <Button variant="outline-danger" onClick={handleClearLeaderboard}>
+              Clear Leaderboard
+            </Button>
           </div>
-        ) : (
-          <div className="leaderboard-table-container">
-            <table className="leaderboard-table">
-              <caption className="sr-only">
-                Leaderboard for {selectedDifficulty} difficulty, sorted by score
-                and time
-              </caption>
-              <thead>
-                <tr>
-                  <th scope="col">Rank</th>
-                  <th scope="col">Standard ID</th>
-                  <th scope="col">Score</th>
-                  <th scope="col">Accuracy</th>
-                  <th scope="col">Time</th>
-                  <th scope="col">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {leaderboardData.map((entry, index) => (
-                  <tr
-                    key={index}
-                    className={entry.sid === currentSID ? "current-user" : ""}
-                  >
-                    <td className="rank-cell">
-                      <span
-                        className="rank-badge"
-                        aria-label={`Rank ${index + 1}`}
-                      >
-                        {getRankBadge(index)}
-                      </span>
-                    </td>
-                    <td className="sid-cell">
-                      {entry.sid}
-                      {entry.sid === currentSID && (
-                        <span className="you-badge" aria-label="This is you">
-                          You
-                        </span>
-                      )}
-                    </td>
-                    <td className="score-cell">{entry.score}</td>
-                    <td className="accuracy-cell">{entry.percentage}%</td>
-                    <td className="time-cell">
-                      {formatTime(entry.timeInSeconds)}
-                    </td>
-                    <td className="date-cell">
-                      {new Date(entry.timestamp).toLocaleDateString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        <div className="leaderboard-info">
-          <p>
-            <strong>Ranking:</strong> Sorted by highest score first, then
-            fastest time.
-          </p>
-          <p className="total-entries">
-            Total entries: {leaderboardData.length}
-          </p>
-        </div>
-      </div>
-
-      <div className="leaderboard-actions">
-        <button className="btn btn-primary btn-large" onClick={onBack}>
-          Back to Game
-        </button>
-        <button
-          className="btn btn-secondary btn-large"
-          onClick={handleExportToExcel}
-          aria-label="Download leaderboard as Excel file"
-        >
-          📊 Export to Excel
-        </button>
-        <button
-          className="btn btn-secondary"
-          onClick={handleClearLeaderboard}
-          aria-label="Clear all leaderboard data"
-        >
-          Clear Leaderboard
-        </button>
-      </div>
-    </section>
+        </Col>
+      </Row>
+    </Container>
   );
 }
 
