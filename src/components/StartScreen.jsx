@@ -102,7 +102,7 @@ function StartScreen({ onStartGame, onViewLeaderboard }) {
               <div className="col-md-4">
                 <div className="card h-100 border-warning">
                   <div className="card-body text-center">
-                    <h4 className="card-title" style={{ color: "#cc8800" }}>
+                    <h4 className="card-title" style={{ color: "#996600" }}>
                       Intermediate
                     </h4>
                     <p className="card-text">ARIA and semantic HTML</p>

@@ -66,7 +66,7 @@ This document summarizes the accessibility violations found by automated testing
 
 ```jsx
 // Current (FAILS)
-<h4 className="card-title" style={{ color: 'rgb(204, 136, 0)' }}>
+<h4 className="card-title" style={{ color: '#' }}>
   Intermediate
 </h4>
 

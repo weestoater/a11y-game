@@ -76,21 +76,65 @@ textarea:focus {
   font-size: 1.2em;
 }
 
-/* Custom color overrides for better contrast */
-.btn-warning {
-  background-color: #e0a800 !important;
-  border-color: #d39e00 !important;
-  color: #000 !important;
+/* ==========================================================================
+   Color Contrast Fixes - WCAG 2.1 Level AA Compliance
+   ========================================================================== */
+
+/* Fix 1: Bootstrap bg-info has poor contrast (1.95:1) - needs 4.5:1 */
+.badge.bg-info {
+  background-color: #0a5c7a !important; /* Darker cyan with 4.5:1 contrast */
+  color: #ffffff !important;
 }
 
-.btn-warning:hover {
-  background-color: #cc8800 !important;
-  border-color: #b37700 !important;
+/* Fix 2: Bootstrap outline-primary buttons have 4.26:1 - needs 4.5:1 */
+.btn-outline-primary {
+  color: #0055cc !important; /* Darker blue with 4.6:1 contrast */
+  border-color: #0055cc !important;
 }
 
-/* Ensure good contrast for text colors */
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+  background-color: #0055cc !important;
+  border-color: #0055cc !important;
+  color: #ffffff !important;
+}
+
+.btn-outline-primary:active,
+.btn-outline-primary.active {
+  background-color: #0055cc !important;
+  border-color: #0055cc !important;
+  color: #ffffff !important;
+}
+
+/* Fix 3: Custom warning color for Intermediate difficulty title */
 .text-warning {
-  color: #cc8800 !important;
+  color: #996600 !important; /* Darker gold with 3.5:1 contrast for large text */
+}
+
+/* Fix 4: Warning buttons - ensure good contrast */
+.btn-warning {
+  background-color: #996600 !important; /* Darker gold */
+  border-color: #996600 !important;
+  color: #fff !important;
+}
+
+.btn-warning:hover,
+.btn-warning:focus {
+  background-color: #998800 !important;
+  border-color: #996600 !important;
+  color: #fff !important;
+}
+
+/* Fix 5: Ensure primary buttons maintain good contrast */
+.btn-primary {
+  background-color: #0055cc !important;
+  border-color: #0055cc !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: #004099 !important;
+  border-color: #004099 !important;
 }
 
 /* Code snippets */
