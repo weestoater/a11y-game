@@ -50,10 +50,12 @@ function StartScreen({ onStartGame, onViewLeaderboard }) {
               <div className="col-md-4">
                 <div className="card h-100 border-warning">
                   <div className="card-body text-center">
-                    <h4 className="card-title text-warning">Intermediate</h4>
+                    <h4 className="card-title" style={{ color: "#cc8800" }}>
+                      Intermediate
+                    </h4>
                     <p className="card-text">ARIA and semantic HTML</p>
                     <button
-                      className="btn btn-warning w-100"
+                      className="btn btn-warning text-dark w-100"
                       onClick={() => onStartGame("intermediate")}
                     >
                       Start

@@ -80,6 +80,10 @@ function App() {
     }
   };
 
+  const handleNavigateHome = () => {
+    setScreen("start");
+  };
+
   useEffect(() => {
     // Add keyboard shortcut for restart
     const handleKeyPress = (e) => {
@@ -95,7 +99,10 @@ function App() {
   return (
     <div className="app">
       <SkipLink />
-      <Header />
+      <Header
+        onNavigateHome={handleNavigateHome}
+        showNav={screen !== "sid" && screen !== "start"}
+      />
 
       <main id="main-content" role="main">
         <div className="container">

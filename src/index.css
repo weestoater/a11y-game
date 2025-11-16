@@ -62,6 +62,23 @@ textarea:focus {
   font-size: 1.2em;
 }
 
+/* Custom color overrides for better contrast */
+.btn-warning {
+  background-color: #e0a800 !important;
+  border-color: #d39e00 !important;
+  color: #000 !important;
+}
+
+.btn-warning:hover {
+  background-color: #cc8800 !important;
+  border-color: #b37700 !important;
+}
+
+/* Ensure good contrast for text colors */
+.text-warning {
+  color: #cc8800 !important;
+}
+
 /* Code snippets */
 pre {
   overflow-x: auto;
